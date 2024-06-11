@@ -55,7 +55,6 @@ namespace MyGarden_API.Controllers
             return Ok(await GetJwtResult(response));
         }
 
-
         private async Task<AuthResponseViewModel> GetJwtResult(AuthResponse response)
         {
             return new AuthResponseViewModel

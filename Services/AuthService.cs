@@ -6,6 +6,12 @@ using MyGarden_API.Models;
 using MyGarden_API.Models.Entities;
 using MyGarden_API.ViewModels;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
+using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace MyGarden_API.Services
 {
@@ -15,19 +21,20 @@ namespace MyGarden_API.Services
         private readonly IJwtFactory _jwtFactory;
         private readonly ApiDbContext _context;
         private readonly ILogger<AuthService> _logger;
-        private readonly ClaimsPrincipal _user;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMailService _mailService;
 
-        public AuthService(UserManager<ApiUser> userManager, IJwtFactory jwtFactory, ApiDbContext context, ILogger<AuthService> logger, ClaimsPrincipal user, IMailService mailService)
+        public AuthService(UserManager<ApiUser> userManager, IJwtFactory jwtFactory, ApiDbContext context, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor, IMailService mailService)
         {
             _userManager = userManager;
             _jwtFactory = jwtFactory;
             _context = context;
             _logger = logger;
-            _user = user;
+            _httpContextAccessor = httpContextAccessor;
             _mailService = mailService;
         }
 
+        private ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User;
 
         public async Task<AuthResponse> AuthenticateWithCredentialsAsync(string username, string password)
         {
@@ -98,7 +105,6 @@ namespace MyGarden_API.Services
 
             if (user == null)
             {
-                //throw new Exception("No user with email found");
                 throw new ModelResponse<bool>()
                 {
                     HTTP = StatusCodes.Status400BadRequest,
@@ -127,7 +133,6 @@ namespace MyGarden_API.Services
 
             return true;
         }
-
 
         public async Task<AuthResponse> AuthenticateWithRefreshTokenAsync(string refreshTokenId)
         {
@@ -166,7 +171,7 @@ namespace MyGarden_API.Services
 
         public async Task<IdentityResult> ChangePasswordAsync(string currentPassword, string newPassword)
         {
-            var user = _user.GetUser(_context);
+            var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
                 throw new InvalidOperationException("User not found");
@@ -258,6 +263,5 @@ namespace MyGarden_API.Services
             Random.NextBytes(buffer);
             return Convert.ToBase64String(buffer);
         }
-
     }
 }

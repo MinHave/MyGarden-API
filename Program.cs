@@ -12,6 +12,11 @@ using Microsoft.AspNetCore.Http;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using MyGarden_API.API.Models;
+using MyGarden_API.Services.Interfaces;
+using MyGarden_API.Repositories;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MyGarden_API.ViewModels.Mappings;
+using MyGarden_API.Repositories.Interfaces; // Add this for extension methods
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +31,13 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddScoped(typeof(IRepositoryDesignPattern<>), typeof(RepositoryDesignPattern<>));
+builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFtpService, FtpService>();
+builder.Services.AddScoped<IPlantService, PlantService>();
+builder.Services.AddScoped<IGardenPlantRepository, GardenPlantRepository>();
 
 // Register HttpClient
 builder.Services.AddHttpClient();
@@ -41,6 +50,9 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Register FtpOptions configuration
 builder.Services.Configure<FtpOptions>(builder.Configuration.GetSection("FtpOptions"));
+
+// Register AutoMapper
+builder.Services.AddAutoMapper(typeof(EntityToViewModelMappingProfile));
 
 // Add environment-specific services
 if (builder.Environment.IsDevelopment())

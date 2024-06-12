@@ -9,7 +9,7 @@ using MyGarden_API.ViewModels;
 
 namespace MyGarden_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthController : Controller
     {   private readonly IAuthService _authService;

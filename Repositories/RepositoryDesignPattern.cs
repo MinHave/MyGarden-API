@@ -3,16 +3,19 @@ using System.Linq.Expressions;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace MyGarden_API.Repositories
 {
     public class RepositoryDesignPattern<T> : IRepositoryDesignPattern<T> where T : class
     {
         private readonly ApiDbContext _context;
+        private readonly IMapper _mapper;
 
-        public RepositoryDesignPattern(ApiDbContext context)
+        public RepositoryDesignPattern(ApiDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<bool> Create(T entity)
@@ -41,17 +44,17 @@ namespace MyGarden_API.Repositories
             }
         }
 
-        public async Task<TResult> GetByCondition<TResult>(Expression<Func<T, bool>> condition, Expression<Func<T, TResult>> selector, Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
+        public async Task<TResult> GetByCondition<TResult>(Expression<Func<T, bool>> condition, Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
         {
             if (useDisabledCondition)
             {
-                var result = await _context.Set<T>().Where(condition).Where(disabledCondition).Select(selector).SingleOrDefaultAsync();
-                return result;
+                var result = await _context.Set<T>().Where(condition).Where(disabledCondition).SingleOrDefaultAsync();
+                return _mapper.Map<TResult>(result);
             }
             else
             {
-                var result = await _context.Set<T>().Where(condition).Select(selector).SingleOrDefaultAsync();
-                return result;
+                var result = await _context.Set<T>().Where(condition).SingleOrDefaultAsync();
+                return _mapper.Map<TResult>(result);
             }
         }
 

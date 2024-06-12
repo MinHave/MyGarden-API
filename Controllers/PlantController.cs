@@ -14,10 +14,14 @@ namespace MyGarden_API.Controllers
     public class PlantController : Controller
     {
         private readonly ILogger<PlantController> _logger;
-        private readonly UserManager<ApiUser> _userManager;
         private readonly ApiDbContext _context;
-        private readonly IMapper _mapper;
 
+
+        public PlantController(ApiDbContext context, ILogger<PlantController> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Plant>>> GetPlants()

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace MyGarden_API.Repositories
 {
@@ -30,17 +32,17 @@ namespace MyGarden_API.Repositories
             return await _context.SaveChangesAsync() != 0;
         }
 
-        public async Task<ICollection<TResult>> GetAll<TResult>(Expression<Func<T, TResult>> selector, Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
+        public async Task<ICollection<TResult>> GetAll<TResult>(Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
         {
             if (useDisabledCondition)
             {
-                var result = await _context.Set<T>().Where(disabledCondition).Select(selector).ToListAsync();
-                return result;
+                var result = await _context.Set<T>().Where(disabledCondition).ToListAsync();
+                return _mapper.Map<ICollection<TResult>> (result);
             }
             else
             {
-                var result = await _context.Set<T>().Select(selector).ToListAsync();
-                return result;
+                var result = await _context.Set<T>().ToListAsync();
+                return _mapper.Map<ICollection<TResult>>(result);
             }
         }
 
@@ -58,18 +60,18 @@ namespace MyGarden_API.Repositories
             }
         }
 
-        public async Task<ICollection<TResult>> GetListByCondition<TResult>(Expression<Func<T, bool>> condition, Expression<Func<T, TResult>> selector, Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
+        public async Task<ICollection<TResult>> GetListByCondition<TResult>(Expression<Func<T, bool>> condition, Expression<Func<T, bool>> disabledCondition, bool useDisabledCondition)
         {
 
             if (useDisabledCondition)
             {
-                var result = await _context.Set<T>().Where(condition).Where(disabledCondition).Select(selector).ToListAsync();
-                return result;
+                var result = await _context.Set<T>().Where(condition).Where(disabledCondition).ToListAsync();
+                return _mapper.Map<ICollection<TResult>>(result);
             }
             else
             {
-                var result = await _context.Set<T>().Where(condition).Select(selector).ToListAsync();
-                return result;
+                var result = await _context.Set<T>().Where(condition).ToListAsync();
+                return _mapper.Map<ICollection<TResult>>(result);
             }
         }
 

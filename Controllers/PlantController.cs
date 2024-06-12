@@ -32,7 +32,10 @@ namespace MyGarden_API.Controllers
         [HttpGet("gardenPlants{gardenId}")]
         public async Task<ActionResult<List<PlantViewModel>>> GetPlants(Guid gardenId)
         {
-            return await _plantService.GetPlantsFromGarden(gardenId);
+
+            var plants = await _plantService.GetPlantsFromGarden(gardenId);
+            if (plants == null) { return new List<PlantViewModel>(); }
+            return plants;
         }
 
         // GET: Plant/5

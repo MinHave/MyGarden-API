@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MyGarden_API.Models.Entities
 {
-    public class Garden
+    public class Garden : IDisabledEntity
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
@@ -13,5 +13,7 @@ namespace MyGarden_API.Models.Entities
 
         [ForeignKey("gardenowner")]
         public ApiUser GardenOwner {  get; set; }
+
+        public bool IsDisabled { get; set; }
     }
 }

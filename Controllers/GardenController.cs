@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
 using MyGarden_API.Models.Entities;
+using MyGarden_API.Services.Interfaces;
+using MyGarden_API.ViewModels;
 
 namespace MyGarden_API.Controllers
 {
@@ -14,94 +16,49 @@ namespace MyGarden_API.Controllers
     [ApiController]
     public class GardenController : Controller
     {
-        private readonly ApiDbContext _context;
+        private readonly IGardenService _gardenService;
 
-        public GardenController(ApiDbContext context)
+        public GardenController(IGardenService gardenService)
         {
-            _context = context;
+            _gardenService = gardenService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Garden>>> GetGardens()
-        {
-            return await _context.Gardens.ToListAsync();
-        }
-
-        // GET: Garden/5
+   
+        // GET: garden/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Garden>> GetGarden(Guid id)
+        public async Task<ActionResult<GardenViewModel>> GetGarden(Guid id)
         {
-            var garden = await _context.Gardens.FindAsync(id);
 
-            if (garden == null)
-            {
-                return NotFound();
-            }
-
-            return garden;
+            var plant = await _gardenService.GetGardenById(id);
+            return plant == null ? NotFound() : plant;
         }
 
-        // PUT: Garden/5
+        // PUT: Garden
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutGarden(Guid id, Garden garden)
+        [HttpPut]
+        public async Task<IActionResult> PutPlant(Garden garden)
         {
-            if (id != garden.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(garden).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!GardenExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            var result = await _gardenService._baseService.Update(garden);
+            return result ? Ok() : BadRequest();
         }
 
         // POST: Garden
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Garden>> PostGarden(Garden garden)
+        public async Task<ActionResult<Plant>> CreatePlant(Garden garden)
         {
-            _context.Gardens.Add(garden);
-            await _context.SaveChangesAsync();
-
+            await _gardenService._baseService.Create(garden);
+            //_context.Plants.Add(plant);
             return CreatedAtAction("GetGarden", new { id = garden.Id }, garden);
         }
 
-        // DELETE: Garden/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGarden(Guid id)
+        // DELETE: Plant
+        [HttpDelete]
+        public async Task<IActionResult> DeletePlant(Garden garden)
         {
-            var garden = await _context.Gardens.FindAsync(id);
-            if (garden == null)
-            {
-                return NotFound();
-            }
-
-            _context.Gardens.Remove(garden);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool GardenExists(Guid id)
-        {
-            return _context.Gardens.Any(e => e.Id == id);
+            if (garden == null) return NotFound();
+            var result = await _gardenService._baseService.Delete(garden);
+            return result ? Ok() : BadRequest();
         }
     }
 }

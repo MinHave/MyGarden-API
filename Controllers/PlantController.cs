@@ -5,7 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
 using MyGarden_API.Models.Entities;
+using MyGarden_API.Repositories;
 using MyGarden_API.Services;
+using MyGarden_API.Services.Interfaces;
+using MyGarden_API.ViewModels;
+using System.Net.Sockets;
 
 namespace MyGarden_API.Controllers
 {
@@ -13,77 +17,59 @@ namespace MyGarden_API.Controllers
     [ApiController]
     public class PlantController : Controller
     {
-        private readonly ILogger<PlantController> _logger;
-        private readonly ApiDbContext _context;
+        private readonly IRepositoryDesignPattern<Plant> _designPattern;
+
+        //private readonly ILogger<PlantController> _logger;
+        private readonly IPlantService _plantService;
 
 
-        public PlantController(ApiDbContext context, ILogger<PlantController> logger)
+        public PlantController(IPlantService plantService)
         {
-            _context = context;
-            _logger = logger;
+            _plantService = plantService;
+            //_logger = logger;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Plant>>> GetPlants()
+        [HttpGet("gardenPlants{gardenId}")]
+        public async Task<ActionResult<List<PlantViewModel>>> GetPlants(Guid gardenId)
         {
-            return await _context.Plants.ToListAsync();
+            return await _plantService.GetPlantsFromGarden(gardenId);
         }
 
         // GET: Plant/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Plant>> GetPlant(Guid id)
+        public async Task<ActionResult<PlantViewModel>> GetPlant(Guid id)
         {
-            var plant = await _context.Plants.FindAsync(id);
+            //var plant = await _context.Plants.FindAsync(id);
+            var plant = await _plantService.GetPlantById(id);
             return plant == null ? NotFound() : plant;
         }
 
-        // PUT: Garden/5
+        // PUT: Plant
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPlant(Guid id, Plant plant)
+        [HttpPut]
+        public async Task<IActionResult> PutPlant(Plant plant)
         {
-            if (id != plant.Id) return BadRequest();
-
-            _context.Entry(plant).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PlantExists(id)) return NotFound();
-                else throw;
-            }
-            return NoContent();
+            var result = await _plantService._baseService.Update(plant);
+            return result ? Ok() : BadRequest();
         }
 
         // POST: Plant
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Plant>> PostPlant(Plant plant)
+        public async Task<ActionResult<Plant>> CreatePlant(Plant plant)
         {
-            _context.Plants.Add(plant);
-            await _context.SaveChangesAsync();
+            await _plantService._baseService.Create(plant);
+            //_context.Plants.Add(plant);
             return CreatedAtAction("GetPlant", new { id = plant.Id }, plant);
         }
 
-        // DELETE: Plant/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePlant(Guid id)
+        // DELETE: Plant
+        [HttpDelete]
+        public async Task<IActionResult> DeletePlant(Plant plant)
         {
-            var plant = await _context.Plants.FindAsync(id);
             if (plant == null) return NotFound();
-
-            _context.Plants.Remove(plant);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-
-
-        private bool PlantExists(Guid id)
-        {
-            return _context.Plants.Any(e => e.Id == id);
+            var result = await _designPattern.Delete(plant);
+            return result ? Ok() : BadRequest();
         }
     }
 }

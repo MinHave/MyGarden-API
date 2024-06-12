@@ -74,10 +74,19 @@ builder.Services.Configure<JwtIssuerOptions>(options =>
 {
     options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
     options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
-    options.SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtAppSettingOptions["SecretKey"])), SecurityAlgorithms.HmacSha256);
+    options.SigningCredentials = new SigningCredentials(
+        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtAppSettingOptions["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured."))),
+        SecurityAlgorithms.HmacSha256
+    );
 });
 
 var app = builder.Build();
+
+// Build the service provider
+var serviceProvider = builder.Services.BuildServiceProvider();
+
+// Populate the accounts
+DefaultData.PopulateAccounts(serviceProvider).Wait();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -27,7 +27,7 @@ namespace MyGarden_API.Controllers
             return await _context.Gardens.ToListAsync();
         }
 
-        // GET: api/Garden/5
+        // GET: Garden/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Garden>> GetGarden(Guid id)
         {
@@ -41,7 +41,7 @@ namespace MyGarden_API.Controllers
             return garden;
         }
 
-        // PUT: api/Garden/5
+        // PUT: Garden/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGarden(Guid id, Garden garden)
@@ -72,7 +72,7 @@ namespace MyGarden_API.Controllers
             return NoContent();
         }
 
-        // POST: api/Garden
+        // POST: Garden
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Garden>> PostGarden(Garden garden)
@@ -83,7 +83,7 @@ namespace MyGarden_API.Controllers
             return CreatedAtAction("GetGarden", new { id = garden.Id }, garden);
         }
 
-        // DELETE: api/Garden/5
+        // DELETE: Garden/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGarden(Guid id)
         {

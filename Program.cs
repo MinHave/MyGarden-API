@@ -17,6 +17,7 @@ using MyGarden_API.Repositories;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyGarden_API.ViewModels.Mappings;
 using MyGarden_API.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,29 @@ builder.Services.AddIdentity<ApiUser, IdentityRole>()
     .AddEntityFrameworkStores<ApiDbContext>()
     .AddDefaultTokenProviders();
 
+// Configure JWT Authentication
+var jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
+var secretKey = jwtAppSettingOptions["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)],
+        ValidAudience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey))
+    };
+});
+
 builder.Services.AddScoped(typeof(IRepositoryDesignPattern<>), typeof(RepositoryDesignPattern<>));
 builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IMailService, MailService>();
@@ -37,6 +61,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFtpService, FtpService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IGardenService, GardenService>();
+builder.Services.AddScoped<IGardenRepository, GardenRepository>();
 builder.Services.AddScoped<IGardenPlantRepository, GardenPlantRepository>();
 
 // Register HttpClient
@@ -69,13 +94,12 @@ builder.Services.AddDbContext<ApiDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 // Configure JwtIssuerOptions
-var jwtAppSettingOptions = builder.Configuration.GetSection(nameof(JwtIssuerOptions));
 builder.Services.Configure<JwtIssuerOptions>(options =>
 {
     options.Issuer = jwtAppSettingOptions[nameof(JwtIssuerOptions.Issuer)];
     options.Audience = jwtAppSettingOptions[nameof(JwtIssuerOptions.Audience)];
     options.SigningCredentials = new SigningCredentials(
-        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtAppSettingOptions["SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey is not configured."))),
+        new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
         SecurityAlgorithms.HmacSha256
     );
 });

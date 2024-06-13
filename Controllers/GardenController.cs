@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace MyGarden_API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class GardenController : Controller
     {
         private readonly IGardenService _gardenService;
@@ -23,6 +25,14 @@ namespace MyGarden_API.Controllers
             _gardenService = gardenService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<GardenViewModel>>> GetGardenList()
+        {
+            var user = User;
+            var userId = user.GetUserId();
+            var gardenList = await _gardenService.GetUserGardens(Guid.Parse(userId));
+            return gardenList;
+        }
    
         // GET: garden/5
         [HttpGet("{id}")]

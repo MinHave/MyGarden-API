@@ -10,10 +10,10 @@ namespace MyGarden_API.Services.Interfaces
 
         public Task<List<Garden>> GetGardens(bool onlyActive);
 
+        public Task<List<GardenViewModel>> GetUserGardens(Guid id);
+
         public Task<GardenViewModel> GetGardenFromUser(Guid id);
 
         IBaseService<Garden> _baseService { get; set; }
-        
-        
     }
 }

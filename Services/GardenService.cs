@@ -11,16 +11,18 @@ namespace MyGarden_API.Services
     {
         private readonly IRepositoryDesignPattern<Garden> _designPattern;
         private readonly IGardenPlantRepository _gardenPlantRepository;
+        private readonly IGardenRepository _gardenRepository;
         private readonly IMapper _mapper;
 
         public IBaseService<Garden> _baseService { get; set; }
 
-        public GardenService(IRepositoryDesignPattern<Garden> designPattern, IBaseService<Garden> baseService, IGardenPlantRepository gardenPlantRepository, IMapper mapper)
+        public GardenService(IRepositoryDesignPattern<Garden> designPattern, IBaseService<Garden> baseService, IGardenPlantRepository gardenPlantRepository, IMapper mapper, IGardenRepository gardenRepository)
         {
             _designPattern = designPattern;
             _baseService = baseService;
             _gardenPlantRepository = gardenPlantRepository;
             _mapper = mapper;
+            _gardenRepository = gardenRepository;
         }
 
         public async Task<List<Garden>> GetGardens(bool onlyActive)
@@ -52,6 +54,12 @@ namespace MyGarden_API.Services
              );
 
             return _mapper.Map<GardenViewModel>(garden);
+        }
+
+        public async Task<List<GardenViewModel>> GetUserGardens(Guid id)
+        {
+            var gardenList = await _gardenRepository.GetUserGardens(id);
+            return _mapper.Map<List<GardenViewModel>>(gardenList);
         }
     }
 }

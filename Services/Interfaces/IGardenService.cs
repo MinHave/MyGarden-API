@@ -6,7 +6,11 @@ namespace MyGarden_API.Services.Interfaces
 {
     public interface IGardenService
     {
-        Task<GardenViewModel> GetGardenById(Guid id);
+        public Task<GardenViewModel> GetGardenById(Guid id);
+
+        public Task<List<Garden>> GetGardens(bool onlyActive);
+
+        public Task<GardenViewModel> GetGardenFromUser(Guid id);
 
         IBaseService<Garden> _baseService { get; set; }
         

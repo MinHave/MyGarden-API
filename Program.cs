@@ -36,6 +36,7 @@ builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFtpService, FtpService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
+builder.Services.AddScoped<IGardenService, GardenService>();
 builder.Services.AddScoped<IGardenPlantRepository, GardenPlantRepository>();
 
 // Register HttpClient

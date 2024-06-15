@@ -9,12 +9,10 @@ namespace MyGarden_API
     {
         public static IQueryable<Garden> WhereAllowedByUser(this IQueryable<Garden> query, string userId, ApiDbContext context, Access modifier)
         {
-            var gardenAccess = context.GardenAccess
-                .Where(x => x.UserId == userId && x.Access.HasFlag(modifier))
-                .Select(x => x.Garden.Id)
-                .ToList();
-
-            return query.Where(x => gardenAccess.Contains(x.Id));
+            return query.Where(x => x.GardenOwner.Id == userId || context.GardenAccess
+                .Where(ga => ga.UserId == userId && (ga.Access & modifier) == modifier)
+                .Select(ga => ga.Garden.Id)
+                .Contains(x.Id));
         }
     }
 }

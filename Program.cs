@@ -124,10 +124,11 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseCors(policy => policy
-        .WithOrigins("https://tavsogmatias.com")
+        .AllowAnyOrigin()
         .AllowAnyMethod()
         .AllowAnyHeader());
 }
+
 
 app.UseHttpsRedirection();
 

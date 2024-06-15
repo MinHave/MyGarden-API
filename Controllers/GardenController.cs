@@ -39,14 +39,14 @@ namespace MyGarden_API.Controllers
         public async Task<ActionResult<GardenViewModel>> GetGarden(Guid id)
         {
 
-            var plant = await _gardenService.GetGardenById(id);
-            return plant == null ? NotFound() : plant;
+            var garden = await _gardenService.GetGardenById(id);
+            return garden == null ? NotFound() : garden;
         }
 
         // PUT: Garden
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        public async Task<IActionResult> PutPlant(Garden garden)
+        public async Task<IActionResult> PutGarden(Garden garden)
         {
             var result = await _gardenService._baseService.Update(garden);
             return result ? Ok() : BadRequest();
@@ -55,16 +55,16 @@ namespace MyGarden_API.Controllers
         // POST: Garden
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Plant>> CreatePlant(Garden garden)
+        public async Task<ActionResult<Garden>> CreateGarden(Garden garden)
         {
             await _gardenService._baseService.Create(garden);
-            //_context.Plants.Add(plant);
+            //_context.Gardens.Add(garden);
             return CreatedAtAction("GetGarden", new { id = garden.Id }, garden);
         }
 
-        // DELETE: Plant
+        // DELETE: Garden
         [HttpDelete]
-        public async Task<IActionResult> DeletePlant(Garden garden)
+        public async Task<IActionResult> DeleteGarden(Garden garden)
         {
             if (garden == null) return NotFound();
             var result = await _gardenService._baseService.Delete(garden);

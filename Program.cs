@@ -59,6 +59,7 @@ builder.Services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
 builder.Services.AddScoped<IMailService, MailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IFtpService, FtpService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPlantService, PlantService>();
 builder.Services.AddScoped<IGardenService, GardenService>();
 builder.Services.AddScoped<IGardenRepository, GardenRepository>();

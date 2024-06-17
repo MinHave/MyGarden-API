@@ -1,26 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
 using MyGarden_API.Models.Entities;
 using MyGarden_API.Models.Entities.Enums;
 using MyGarden_API.Repositories.Interfaces;
+using MyGarden_API.ViewModels;
 
 namespace MyGarden_API.Repositories
 {
     public class GardenRepository : IGardenRepository
     {
         private readonly ApiDbContext _context;
+        private readonly IMapper _mapper;
 
-        public GardenRepository(ApiDbContext context)
+        public GardenRepository(ApiDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
-        public async Task<List<Garden>> GetUserGardens(Guid userId)
+        public async Task<List<GardenViewModel>> GetUserGardens(Guid userId)
         {
-            List<Garden> gardenList = await _context.Gardens
+            var gardenList = await _context.Gardens
                 .WhereAllowedByUser(userId.ToString(), _context, Access.GetGarden)
+                .Include(x => x.GardenOwner)
                 .ToListAsync();
-            return gardenList;
+
+            List<GardenViewModel> gardenAccessList = [];
+
+            foreach (Garden item in gardenList)
+            {
+                gardenAccessList.Add(_mapper.Map<GardenViewModel>(item));
+            }
+
+            return gardenAccessList;
         }
     }
 }

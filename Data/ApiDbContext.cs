@@ -17,6 +17,7 @@ namespace MyGarden_API.Data
         public DbSet<Garden> Gardens { get; set; }
 
         public DbSet<GardenAccess> GardenAccess { get; set; }
+
         public DbSet<ApiUser> ApiUsers { get; set; }
 
         public DbSet<Plant> Plants { get; set; }

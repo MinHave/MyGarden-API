@@ -11,6 +11,7 @@ namespace MyGarden_API.ViewModels.Mappings
                 .ReverseMap();
 
             CreateMap<Garden, GardenViewModel>()
+                .ForMember(x => x.GardenName, z => z.MapFrom(c => c.GardenOwner.Name))
                 .ReverseMap();
 
             CreateMap<GardenAccess, GardenAccessViewModel>()

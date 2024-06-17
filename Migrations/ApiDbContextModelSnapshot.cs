@@ -178,7 +178,7 @@ namespace MyGarden_API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AuthRefreshTokens");
+                    b.ToTable("AuthRefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("MyGarden_API.Models.Entities.ApiUser", b =>
@@ -275,7 +275,7 @@ namespace MyGarden_API.Migrations
 
                     b.HasIndex("gardenowner");
 
-                    b.ToTable("Gardens");
+                    b.ToTable("Gardens", (string)null);
                 });
 
             modelBuilder.Entity("MyGarden_API.Models.Entities.GardenAccess", b =>
@@ -302,7 +302,7 @@ namespace MyGarden_API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("GardenAccess");
+                    b.ToTable("GardenAccess", (string)null);
                 });
 
             modelBuilder.Entity("MyGarden_API.Models.Entities.Image", b =>
@@ -335,7 +335,7 @@ namespace MyGarden_API.Migrations
 
                     b.HasKey("id");
 
-                    b.ToTable("Images");
+                    b.ToTable("Images", (string)null);
                 });
 
             modelBuilder.Entity("MyGarden_API.Models.Entities.Plant", b =>
@@ -363,7 +363,7 @@ namespace MyGarden_API.Migrations
 
                     b.HasIndex("GardenId");
 
-                    b.ToTable("Plants");
+                    b.ToTable("Plants", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

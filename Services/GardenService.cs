@@ -36,11 +36,7 @@ namespace MyGarden_API.Services
 
         public async Task<GardenViewModel> GetGardenById(Guid id)
         {
-            Garden garden = await _designPattern.GetByCondition<Garden>(
-                 condition => condition.Id == id,
-                 disabledCondition => true,
-                 true
-             );
+            var garden = await _gardenRepository.GetGardenById(id);
 
             return _mapper.Map<GardenViewModel>(garden);
         }

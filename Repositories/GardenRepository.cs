@@ -18,6 +18,15 @@ namespace MyGarden_API.Repositories
             _context = context;
             _mapper = mapper;
         }
+        public async Task<GardenViewModel> GetGardenById(Guid gardenId)
+        {
+            var garden = await _context.Gardens
+                .Where(x => x.Id == gardenId)
+                .Include(x => x.GardenOwner)
+                .FirstOrDefaultAsync();
+
+            return _mapper.Map<GardenViewModel>(garden);
+        }
 
         public async Task<List<GardenViewModel>> GetUserGardens(Guid userId)
         {

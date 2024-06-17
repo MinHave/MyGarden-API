@@ -29,7 +29,9 @@ namespace MyGarden_API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Post([FromBody] CredentialsViewModel credentials)
         {
-            if (!ModelState.IsValid)
+            try
+            {
+                if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -37,6 +39,11 @@ namespace MyGarden_API.Controllers
             var response = await _authService.AuthenticateWithCredentialsAsync(credentials.UserName, credentials.Password);
 
             return Ok(await GetJwtResult(response));
+            }
+            catch( Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         [HttpPut("register")]

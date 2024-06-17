@@ -58,6 +58,35 @@ namespace MyGarden_API.Data
 
                 await context.SaveChangesAsync();
             }
+            await PopulateTestPlants(serviceProvider);
+        }
+
+        public static async Task PopulateTestPlants(IServiceProvider serviceProvider)
+        {
+            Plant plant1 = new Plant()
+            {
+                Description = "Denne plante må ikke få direkte sollys",
+                Name = "Test plante #1",
+                Specie = "Palm tree",
+            };
+            Plant plant2 = new Plant()
+            {
+                Description = "Ser flot ud",
+                Name = "French rose",
+                Specie = "Flowering plant",
+            };
+            var context = serviceProvider.GetRequiredService<ApiDbContext>();
+            if (!context.Plants.Any())
+            {
+                await context.Plants.AddRangeAsync(plant1, plant2);
+                Garden? garden = await context.Gardens.Where(x => x.GardenOwner.NormalizedUserName == "MGC@TAVSOGMATIAS.COM").FirstOrDefaultAsync();
+                Console.WriteLine(garden);
+                if (garden != null)
+                {
+                    garden.Plants = [plant1, plant2];
+                }
+                await context.SaveChangesAsync();
+            }
         }
 
         public static async Task PopulateAccounts(IServiceProvider serviceProvider)

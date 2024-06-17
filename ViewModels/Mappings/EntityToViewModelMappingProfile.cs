@@ -10,6 +10,9 @@ namespace MyGarden_API.ViewModels.Mappings
             CreateMap<ApiUser, UserViewModel>()
                 .ReverseMap();
 
+            CreateMap<Plant, PlantViewModel>()
+                .ReverseMap();
+
             CreateMap<Garden, GardenViewModel>()
                 .ForMember(x => x.GardenName, z => z.MapFrom(c => c.GardenOwner.Name))
                 .ReverseMap();

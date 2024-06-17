@@ -14,7 +14,7 @@ namespace MyGarden_API.Repositories
             _context = context;
         }
 
-        public async Task<List<Plant>> GetPlantsFromGarden(Guid gardenId)
+        public async Task<List<Plant>> GetPlantsFromGarden(Guid? gardenId)
         {
             List<Plant> plants = await _context.Gardens
                 .Where(x => x.Id == gardenId)

@@ -23,9 +23,10 @@ namespace MyGarden_API.Services
             _mapper = mapper;
         }
 
-        public async Task<List<PlantViewModel>> GetPlantsFromGarden(Guid gardenId)
+        public async Task<List<PlantViewModel>> GetPlantsFromGarden(Guid? gardenId)
         {
             List<Plant> gardenPlants = await _gardenPlantRepository.GetPlantsFromGarden(gardenId);
+            
             return _mapper.Map<List<PlantViewModel>>(gardenPlants);
         }
 

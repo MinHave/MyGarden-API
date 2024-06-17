@@ -29,12 +29,11 @@ namespace MyGarden_API.Controllers
             //_logger = logger;
         }
 
-        [HttpGet("gardenPlants{gardenId}")]
-        public async Task<ActionResult<List<PlantViewModel>>> GetPlants(Guid gardenId)
+        [HttpGet("gardenPlants/{gardenId}")]
+        public async Task<ActionResult<List<PlantViewModel>>> GetPlants(Guid? gardenId)
         {
+            List<PlantViewModel> plants = await _plantService.GetPlantsFromGarden(gardenId);
 
-            var plants = await _plantService.GetPlantsFromGarden(gardenId);
-            if (plants == null) { return new List<PlantViewModel>(); }
             return plants;
         }
 

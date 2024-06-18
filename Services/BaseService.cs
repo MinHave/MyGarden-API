@@ -31,12 +31,14 @@ namespace MyGarden_API.Services.Interfaces
         public async Task<bool> ToggleDisabled(T entity)
         {
             var propertyInfo = entity.GetType().GetProperty("IsDisabled");
+
             if (propertyInfo == null)
             {
                 throw new InvalidOperationException("Entity does not have an 'IsDisabled' property");
             }
 
             bool currentValue = (bool)propertyInfo.GetValue(entity);
+
             propertyInfo.SetValue(entity, !currentValue);
 
             var result = await _designPattern.Update(entity);

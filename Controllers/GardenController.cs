@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
 using MyGarden_API.Models.Entities;
+using MyGarden_API.Services;
 using MyGarden_API.Services.Interfaces;
 using MyGarden_API.ViewModels;
 
@@ -76,6 +77,16 @@ namespace MyGarden_API.Controllers
             if (garden == null) return NotFound();
             var result = await _gardenService._baseService.Delete(garden);
             return result ? Ok() : BadRequest();
+        }
+
+        // Toggle: garden
+        [HttpPost("toggle")]
+        public async Task<IActionResult> ToggleGarden(Guid gardenId)
+        {
+            var success = await _gardenService.ToggleGardenDisabled(gardenId);
+
+            return success ? Ok(success) : BadRequest();
+
         }
     }
 }

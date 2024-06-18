@@ -64,5 +64,16 @@ namespace MyGarden_API.Services
 
             return adminGardenList;
         }
+
+        public async Task<bool> ToggleGardenDisabled(Guid gardenId)
+        {
+            Garden garden = await _designPattern.GetByCondition<Garden>(
+                condition => condition.Id == gardenId,
+                disabledCondition => false,
+                false
+            );
+
+            return await _baseService.ToggleDisabled(garden);
+        }
     }
 }

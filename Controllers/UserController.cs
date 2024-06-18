@@ -40,8 +40,8 @@ namespace MyGarden_API.Controllers
         }
 
 
-        // DELETE: Garden
-        [HttpPost]
+        // Toggle: user
+        [HttpPost("toggle")]
         public async Task<IActionResult> ToggleUser(string id)
         {
             var success = await _userService.ToggleUserDisabled(id);

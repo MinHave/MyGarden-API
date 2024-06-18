@@ -16,6 +16,8 @@ namespace MyGarden_API.Services.Interfaces
 
         public Task<List<GardenViewModel>> GetAdminGardens();
 
+        public Task<bool> ToggleGardenDisabled(Guid gardenId);
+
         IBaseService<Garden> _baseService { get; set; }
     }
 }

@@ -70,7 +70,7 @@ namespace MyGarden_API.Controllers
 
 
         // Toggle: user
-        [HttpPost("toggle")]
+        [HttpPost("toggle/{id}")]
         public async Task<IActionResult> ToggleUser(string id)
         {
             var userId = User.GetUserId();

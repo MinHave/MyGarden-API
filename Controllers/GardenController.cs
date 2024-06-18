@@ -80,7 +80,7 @@ namespace MyGarden_API.Controllers
         }
 
         // Toggle: garden
-        [HttpPost("toggle")]
+        [HttpPost("toggle/{gardenId}")]
         public async Task<IActionResult> ToggleGarden(Guid gardenId)
         {
             var success = await _gardenService.ToggleGardenDisabled(gardenId);

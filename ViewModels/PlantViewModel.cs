@@ -9,5 +9,6 @@ namespace MyGarden_API.ViewModels
         public string name { get; set; }
         public string description { get; set; }
         public string specie { get; set; }
+        public string gardenId { get; set; }
     }
 }

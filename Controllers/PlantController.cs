@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
 using MyGarden_API.Models.Entities;
 using MyGarden_API.Repositories;
+using MyGarden_API.Repositories.Interfaces;
 using MyGarden_API.Services;
 using MyGarden_API.Services.Interfaces;
 using MyGarden_API.ViewModels;
@@ -19,14 +20,14 @@ namespace MyGarden_API.Controllers
     {
         private readonly IRepositoryDesignPattern<Plant> _designPattern;
 
-        //private readonly ILogger<PlantController> _logger;
         private readonly IPlantService _plantService;
+        private readonly IGardenPlantRepository _gardenPlantRepository;
 
 
-        public PlantController(IPlantService plantService)
+        public PlantController(IPlantService plantService, IGardenPlantRepository gardenPlantRepository)
         {
             _plantService = plantService;
-            //_logger = logger;
+            _gardenPlantRepository = gardenPlantRepository;
         }
 
         [HttpGet("gardenPlants/{gardenId}")]
@@ -58,19 +59,20 @@ namespace MyGarden_API.Controllers
         // POST: Plant
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Plant>> CreatePlant(Plant plant)
+        public async Task<ActionResult<Plant>> CreatePlant(PlantViewModel plant)
         {
-            await _plantService._baseService.Create(plant);
-            //_context.Plants.Add(plant);
-            return CreatedAtAction("GetPlant", new { id = plant.Id }, plant);
+            //var newPlant = _mapper.Map<Plant>(plant);
+            //await _plantService._baseService.Create(newPlant);
+            await _gardenPlantRepository.AddPlantToGarden(plant, Guid.Parse(plant.gardenId));
+            return CreatedAtAction("GetPlant", new { id = plant.id}, plant);
         }
 
         // DELETE: Plant
         [HttpDelete]
-        public async Task<IActionResult> DeletePlant(Plant plant)
+        public async Task<IActionResult> DeletePlant([FromBody] Plant plant)
         {
             if (plant == null) return NotFound();
-            var result = await _designPattern.Delete(plant);
+            var result = await _plantService._baseService.Delete(plant);
             return result ? Ok() : BadRequest();
         }
     }

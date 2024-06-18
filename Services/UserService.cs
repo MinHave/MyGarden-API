@@ -4,6 +4,7 @@ using MyGarden_API.Repositories.Interfaces;
 using MyGarden_API.Repositories;
 using MyGarden_API.Services.Interfaces;
 using MyGarden_API.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace MyGarden_API.Services
 {
@@ -12,17 +13,20 @@ namespace MyGarden_API.Services
         private readonly IRepositoryDesignPattern<ApiUser> _designPattern;
         private readonly IBaseService<ApiUser> _baseService;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApiUser> _userManager;
 
-        public UserService(IRepositoryDesignPattern<ApiUser> designPattern, IMapper mapper, IBaseService<ApiUser> baseService)
+        public UserService(IRepositoryDesignPattern<ApiUser> designPattern, IMapper mapper, IBaseService<ApiUser> baseService, UserManager<ApiUser> userManager)
         {
             _designPattern = designPattern;
             _mapper = mapper;
             _baseService = baseService;
+            _userManager = userManager;
         }
 
         public async Task<List<UserViewModel>> GetUsers()
         {
-           var result = await _designPattern.GetAll<ApiUser>(
+
+            var result = await _designPattern.GetAll<ApiUser>(
                disabledCondition => disabledCondition.IsDisabled == false,
                 false
                 );

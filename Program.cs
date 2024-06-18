@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using MyGarden_API.ViewModels.Mappings;
 using MyGarden_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +77,10 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Register FtpOptions configuration
 builder.Services.Configure<FtpOptions>(builder.Configuration.GetSection("FtpOptions"));
+// configurations
+builder.Services.Configure<SiteOptions>(builder.Configuration.GetSection(nameof(SiteOptions)));
+
+builder.Services.Configure<SimpleSmtpOptions>(builder.Configuration.GetSection(nameof(SimpleSmtpOptions)));
 
 // Register AutoMapper
 builder.Services.AddAutoMapper(typeof(EntityToViewModelMappingProfile));

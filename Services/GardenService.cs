@@ -60,9 +60,9 @@ namespace MyGarden_API.Services
 
         public async Task<List<GardenViewModel>> GetAdminGardens()
         {
-            ICollection<Garden> adminGardenList = await _gardenPlantRepository.GetAll();
+            List<GardenViewModel> adminGardenList = await _gardenRepository.GetAll();
 
-            return _mapper.Map<List<GardenViewModel>>(adminGardenList);
+            return adminGardenList;
         }
     }
 }

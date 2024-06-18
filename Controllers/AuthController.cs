@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using MyGarden_API.API.Auth;
 using MyGarden_API.API.Helpers;
 using MyGarden_API.API.Models;
 using MyGarden_API.Models;
+using MyGarden_API.Models.Entities;
 using MyGarden_API.Services;
 using MyGarden_API.ViewModels;
 
@@ -18,12 +20,14 @@ namespace MyGarden_API.Controllers
         private readonly IAuthService _authService;
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
+        private readonly UserManager<ApiUser> _userManager;
 
-        public AuthController(IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions, IAuthService authService)
+        public AuthController(IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions, IAuthService authService, UserManager<ApiUser> userManager)
         {
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
             _authService = authService;
+            _userManager = userManager;
         }
 
         [HttpPost("login")]
@@ -41,6 +45,32 @@ namespace MyGarden_API.Controllers
             return Ok(await GetJwtResult(response));
             }
             catch( Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPost("admin/login")]
+        public async Task<IActionResult> adminLogin([FromBody] CredentialsViewModel credentials)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var response = await _authService.AuthenticateWithCredentialsAsync(credentials.UserName, credentials.Password);
+
+                var roles = await _userManager.GetRolesAsync(response.User);
+
+                if(!roles.Contains("admin")) {
+                    return BadRequest();
+                }
+
+                return Ok(await GetJwtResult(response));
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex);
             }

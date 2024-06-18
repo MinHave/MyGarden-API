@@ -9,6 +9,7 @@ using MyGarden_API.API.Models;
 using MyGarden_API.Models;
 using MyGarden_API.Models.Entities;
 using MyGarden_API.Services;
+using MyGarden_API.Services.Interfaces;
 using MyGarden_API.ViewModels;
 
 namespace MyGarden_API.Controllers
@@ -21,13 +22,17 @@ namespace MyGarden_API.Controllers
         private readonly IJwtFactory _jwtFactory;
         private readonly JwtIssuerOptions _jwtOptions;
         private readonly UserManager<ApiUser> _userManager;
+        private readonly IGardenService _gardenService;
+        private readonly IUserService _userService;
 
-        public AuthController(IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions, IAuthService authService, UserManager<ApiUser> userManager)
+        public AuthController(IJwtFactory jwtFactory, IOptions<JwtIssuerOptions> jwtOptions, IAuthService authService, UserManager<ApiUser> userManager, IGardenService gardenService, IUserService userService)
         {
             _jwtFactory = jwtFactory;
             _jwtOptions = jwtOptions.Value;
             _authService = authService;
             _userManager = userManager;
+            _gardenService = gardenService;
+            _userService = userService;
         }
 
         [HttpPost("login")]
@@ -131,6 +136,21 @@ namespace MyGarden_API.Controllers
             }
 
             var response = await _authService.ActivateAccount(viewModel);
+            if (response)
+            {
+                var gardenOwner = await _userManager.FindByEmailAsync(viewModel.Email);
+                if (gardenOwner == null) return BadRequest();
+               
+                Garden newGarden = new Garden()
+                {
+                    GardenOwner = gardenOwner,
+                    Plants = new List<Plant>(),
+                    IsDisabled = false,
+                };
+
+                var gardenCreationStatus = await _gardenService._baseService.Create(newGarden);
+                if (gardenCreationStatus) return Ok(gardenCreationStatus);
+            }
 
             return Ok(response);
         }

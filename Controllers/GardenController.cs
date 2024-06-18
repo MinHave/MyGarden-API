@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyGarden_API.Data;
@@ -20,26 +22,35 @@ namespace MyGarden_API.Controllers
     public class GardenController : Controller
     {
         private readonly IGardenService _gardenService;
+        private readonly IUserService _userService;
+        private readonly UserManager<ApiUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public GardenController(IGardenService gardenService)
+        public GardenController(IGardenService gardenService, IUserService userService, UserManager<ApiUser> userManager, IMapper mapper)
         {
             _gardenService = gardenService;
+            _userService = userService;
+            _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<GardenViewModel>>> GetGardenList()
         {
-            var user = User;
-            var userId = user.GetUserId();
+            var userId = User.GetUserId();
+            var apiUser = await _userService.GetUserById(userId);
+            if (apiUser == null) return BadRequest();
 
-            if (user.IsInRole("admin")) {
+            var roles = await _userManager.GetRolesAsync(_mapper.Map<ApiUser>(apiUser));
+
+            if (roles.Contains("admin"))
+            {
                 return await _gardenService.GetAdminGardens();
             }
             else
             {
                 return await _gardenService.GetUserGardens(Guid.Parse(userId));
             }
-
         }
    
         // GET: garden/5

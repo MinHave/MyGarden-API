@@ -30,8 +30,15 @@ namespace MyGarden_API.Controllers
         {
             var user = User;
             var userId = user.GetUserId();
-            var gardenList = await _gardenService.GetUserGardens(Guid.Parse(userId));
-            return gardenList;
+
+            if (user.IsInRole("admin")) {
+                return await _gardenService.GetAdminGardens();
+            }
+            else
+            {
+                return await _gardenService.GetUserGardens(Guid.Parse(userId));
+            }
+
         }
    
         // GET: garden/5

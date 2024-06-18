@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyGarden_API.API.Helpers;
 using MyGarden_API.Models.Entities;
 using MyGarden_API.Services;
 using MyGarden_API.Services.Interfaces;
@@ -9,6 +11,7 @@ namespace MyGarden_API.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize(Policy = AuthPolicies.RequireAdmin)]
     public class UserController : Controller
     {
         private readonly IBaseService<ApiUser> _baseService;
@@ -23,8 +26,8 @@ namespace MyGarden_API.Controllers
         public async Task<ActionResult<List<UserViewModel>>> GetUserList()
         {
             List<UserViewModel> users = await _userService.GetUsers();
-
             return users;
+            
         }
 
         // GET: user/5

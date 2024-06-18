@@ -7,5 +7,7 @@ namespace MyGarden_API.Repositories.Interfaces
     {
         public Task<List<GardenViewModel>> GetUserGardens(Guid userId);
         public Task<GardenViewModel> GetGardenById(Guid userId);
+
+        public Task<List<GardenViewModel>> GetAll();
     }
 }

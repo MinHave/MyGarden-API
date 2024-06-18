@@ -57,5 +57,12 @@ namespace MyGarden_API.Services
             var gardenList = await _gardenRepository.GetUserGardens(id);
             return _mapper.Map<List<GardenViewModel>>(gardenList);
         }
+
+        public async Task<List<GardenViewModel>> GetAdminGardens()
+        {
+            ICollection<Garden> adminGardenList = await _gardenPlantRepository.GetAll();
+
+            return _mapper.Map<List<GardenViewModel>>(adminGardenList);
+        }
     }
 }

@@ -23,6 +23,7 @@ namespace MyGarden_API.Repositories
             var garden = await _context.Gardens
                 .Where(x => x.Id == gardenId)
                 .Include(x => x.GardenOwner)
+                .Include(x => x.Plants)
                 .FirstOrDefaultAsync();
 
             return _mapper.Map<GardenViewModel>(garden);
@@ -33,6 +34,24 @@ namespace MyGarden_API.Repositories
             var gardenList = await _context.Gardens
                 .WhereAllowedByUser(userId.ToString(), _context, Access.GetGarden)
                 .Include(x => x.GardenOwner)
+                .Include(x => x.Plants)
+                .ToListAsync();
+
+            List<GardenViewModel> gardenAccessList = [];
+
+            foreach (Garden item in gardenList)
+            {
+                gardenAccessList.Add(_mapper.Map<GardenViewModel>(item));
+            }
+
+            return gardenAccessList;
+        }
+
+        public async Task<List<GardenViewModel>> GetAll()
+        {
+            var gardenList = await _context.Gardens
+                .Include(x => x.GardenOwner)
+                .Include(x => x.Plants)
                 .ToListAsync();
 
             List<GardenViewModel> gardenAccessList = [];

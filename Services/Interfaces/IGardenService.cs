@@ -14,6 +14,8 @@ namespace MyGarden_API.Services.Interfaces
 
         public Task<GardenViewModel> GetGardenFromUser(Guid id);
 
+        public Task<List<GardenViewModel>> GetAdminGardens();
+
         IBaseService<Garden> _baseService { get; set; }
     }
 }

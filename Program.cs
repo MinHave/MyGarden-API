@@ -19,11 +19,19 @@ using MyGarden_API.ViewModels.Mappings;
 using MyGarden_API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Configuration;
+using MyGarden_API.API.Helpers;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(AuthPolicies.RequireAdmin, policy => policy.RequireClaim(AuthConstants.JwtClaimIdentifiers.Rol, AuthRoles.Admin));
+    options.AddPolicy(AuthPolicies.RequireManager, policy => policy.RequireClaim(AuthConstants.JwtClaimIdentifiers.Rol, AuthRoles.Admin, AuthRoles.Manager));
+});
+
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddSwaggerGen();
 
